@@ -8,7 +8,7 @@ Author URI: http://strategy11.com
 Author: Strategy11
 */
 
-class frmUserTracking {
+class Frm_User_Tracking {
 	// keep the page history below 100
 	protected static $page_max = 100;
 
@@ -16,7 +16,7 @@ class frmUserTracking {
 	protected static $referrer_info = '';
 
 	public function __construct() {
-		add_filter( 'frm_load_controllers', 'frmUserTracking::include_tracking_hooks' );
+		add_filter( 'frm_load_controllers', 'Frm_User_Tracking::include_tracking_hooks' );
 	}
 
 	public static function include_tracking_hooks( $classes ) {
@@ -27,15 +27,15 @@ class frmUserTracking {
 	public static function load_hooks() {
 		if ( ! FrmAppHelper::is_admin() ) {
 			// Update the session data
-			add_action( 'init', 'frmUserTracking::compile_referer_session', 1 );
+			add_action( 'init', 'Frm_User_Tracking::compile_referer_session', 1 );
 		}
-		add_action( 'frm_after_create_entry', 'frmUserTracking::insert_tracking_into_entry' );
-		add_action( 'admin_init', 'frmUserTracking::include_auto_updater', 1 );
+		add_action( 'frm_after_create_entry', 'Frm_User_Tracking::insert_tracking_into_entry' );
+		add_action( 'admin_init', 'Frm_User_Tracking::include_auto_updater', 1 );
 	}
 
-	public static function include_auto_updater(){
-		include_once( dirname( __FILE__ ) .'/FrmUsrTrkUpdate.php');
-		new frmUsrTrkUpdate();
+	public static function include_auto_updater() {
+		include_once( dirname( __FILE__ ) . '/frm-usrtrk-update.php' );
+		new Frm_Usrtrk_Update();
 	}
 
 	public static function compile_referer_session() {
@@ -106,10 +106,10 @@ class frmUserTracking {
 		$entry_description['referrer'] = self::$referrer_info;
 
 		global $wpdb;
-		$wpdb->update( $wpdb->prefix .'frm_items', array( 'description' => serialize( $entry_description ) ), array( 'id' => $entry_id ) );
+		$wpdb->update( $wpdb->prefix . 'frm_items', array( 'description' => serialize( $entry_description ) ), array( 'id' => $entry_id ) );
 	}
 
-	public static function get_referer_info(){
+	public static function get_referer_info() {
 		self::add_referer_to_string();
 		self::add_pages_to_string();
 		self::add_keywords_to_string();
@@ -174,4 +174,4 @@ class frmUserTracking {
 	}
 }
 
-new FrmUserTracking();
+new Frm_User_Tracking();
