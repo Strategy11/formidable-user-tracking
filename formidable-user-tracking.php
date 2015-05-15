@@ -95,7 +95,11 @@ class Frm_User_Tracking {
 	}
 
 	private static function is_excluded_from_session( $key ) {
-		return ( ! isset( $_SESSION[ $key ] ) || ! is_array( $_SESSION[ $key ] ) );
+		return ( ! self::is_included_in_session( $key ) || ! is_array( $_SESSION[ $key ] ) );
+	}
+
+	private static function is_included_in_session( $key ) {
+		return isset( $_SESSION ) && isset( $_SESSION[ $key ] ) && $_SESSION[ $key ];
 	}
 
 	public static function insert_tracking_into_entry( $entry_id ) {
@@ -117,9 +121,9 @@ class Frm_User_Tracking {
 
 	private static function add_referer_to_string() {
 		$i = 1;
-		if ( isset( $_SESSION ) && isset( $_SESSION['frm_http_referer'] ) && $_SESSION['frm_http_referer'] ) {
+		if ( self::is_included_in_session( 'frm_http_referer' ) ) {
 			foreach ( $_SESSION['frm_http_referer'] as $referer ) {
-				self::$referrer_info .= str_pad( "Referer $i: ", 20 ) . $referer . "\r\n";
+				self::$referrer_info .= str_pad( "Referer $i: ", 20 ) . wp_strip_all_tags( $referer ) . "\r\n";
 				$keywords_used = self::get_referer_query( $referer );
 				if ( false !== $keywords_used ) {
 					self::$keywords[] = $keywords_used;
@@ -136,9 +140,9 @@ class Frm_User_Tracking {
 
 	private static function add_pages_to_string() {
 		$i = 1;
-		if ( isset( $_SESSION ) && isset( $_SESSION['frm_http_pages'] ) && $_SESSION['frm_http_pages'] ) {
+		if ( self::is_included_in_session( 'frm_http_pages' ) ) {
 			foreach ( $_SESSION['frm_http_pages'] as $page ) {
-				self::$referrer_info .= str_pad( "Page visited $i: ", 20 ) . $page . "\r\n";
+				self::$referrer_info .= str_pad( "Page visited $i: ", 20 ) . wp_strip_all_tags( $page ) . "\r\n";
 				$i++;
 			}
 
