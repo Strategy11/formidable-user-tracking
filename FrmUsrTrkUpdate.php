@@ -1,12 +1,12 @@
 <?php
 
-class FrmUsrTrkUpdate{
+class frmUsrTrkUpdate{
 	var $plugin_nicename;
 	var $plugin_name;
 	var $pro_check_interval;
 	var $pro_last_checked_store;
 
-	function __construct(){
+	public function __construct(){
 		if ( ! class_exists( 'FrmUpdatesController' ) ) {
 			return;
 		}
@@ -20,7 +20,7 @@ class FrmUsrTrkUpdate{
 		add_filter( 'site_transient_update_plugins', array( &$this, 'queue_update' ) );
 	}
 
-	function queue_update( $transient, $force = false ) {
+	public function queue_update( $transient, $force = false ) {
 		$plugin = $this;
 
 		global $frm_update;

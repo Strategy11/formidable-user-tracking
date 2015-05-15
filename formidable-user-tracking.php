@@ -8,7 +8,7 @@ Author URI: http://strategy11.com
 Author: Strategy11
 */
 
-class FrmUserTracking {
+class frmUserTracking {
 	// keep the page history below 100
 	protected static $page_max = 100;
 
@@ -16,7 +16,7 @@ class FrmUserTracking {
 	protected static $referrer_info = '';
 
 	public function __construct() {
-		add_filter( 'frm_load_controllers', 'FrmUserTracking::include_tracking_hooks' );
+		add_filter( 'frm_load_controllers', 'frmUserTracking::include_tracking_hooks' );
 	}
 
 	public static function include_tracking_hooks( $classes ) {
@@ -27,16 +27,16 @@ class FrmUserTracking {
 	public static function load_hooks() {
 		if ( ! FrmAppHelper::is_admin() ) {
 			// Update the session data
-			add_action( 'init', 'FrmUserTracking::compile_referer_session', 1 );
+			add_action( 'init', 'frmUserTracking::compile_referer_session', 1 );
 		}
-		add_action( 'frm_after_create_entry', 'FrmUserTracking::insert_tracking_into_entry' );
-		add_action( 'admin_init', 'FrmUserTracking::include_auto_updater', 1 );
+		add_action( 'frm_after_create_entry', 'frmUserTracking::insert_tracking_into_entry' );
+		add_action( 'admin_init', 'frmUserTracking::include_auto_updater', 1 );
 	}
 
-    public static function include_auto_updater(){
-        include_once( dirname( __FILE__ ) .'/FrmUsrTrkUpdate.php');
-        new FrmUsrTrkUpdate();
-    }
+	public static function include_auto_updater(){
+		include_once( dirname( __FILE__ ) .'/FrmUsrTrkUpdate.php');
+		new frmUsrTrkUpdate();
+	}
 
 	public static function compile_referer_session() {
 		if ( defined( 'WP_IMPORTING' ) ) {
@@ -66,20 +66,22 @@ class FrmUserTracking {
 			if ( ! in_array( $direct, $_SESSION['frm_http_referer'] ) ) {
 				$_SESSION['frm_http_referer'][] = $direct;
 			}
-		} else if ( strpos( $_SERVER['HTTP_REFERER'], FrmAppHelper::site_url() ) === false && ! in_array( $_SERVER['HTTP_REFERER'], $_SESSION['frm_http_referer'] ) ) {
-			$_SESSION['frm_http_referer'][] = $_SERVER['HTTP_REFERER'];
+		} else if ( false === strpos( $_SERVER['HTTP_REFERER'], FrmAppHelper::site_url() ) && ! in_array( $_SERVER['HTTP_REFERER'], $_SESSION['frm_http_referer'] ) ) {
+			$_SESSION['frm_http_referer'][] = FrmAppHelper::get_server_value( 'HTTP_REFERER' );
 		}
 	}
 
 	private static function add_current_page_to_session() {
+		$request_uri = FrmAppHelper::get_server_value( 'REQUEST_URI' );
+		$current_url = 'http://' . FrmAppHelper::get_server_value( 'SERVER_NAME' ) . $request_uri;
 		if ( self::is_excluded_from_session( 'frm_http_pages' ) ) {
-			$_SESSION['frm_http_pages'] = array( 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI']);
+			$_SESSION['frm_http_pages'] = array( $current_url );
 		}
 
-		if ( $_SESSION['frm_http_pages'] && ! empty( $_SESSION['frm_http_pages'] ) && ( end( $_SESSION['frm_http_pages'] ) != 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'] ) ) {
-			$ext = substr( strrchr( substr( $_SERVER['REQUEST_URI'], 0, strrpos( $_SERVER['REQUEST_URI'], '?' ) ), '.' ), 1 );
+		if ( ! empty( $_SESSION['frm_http_pages'] ) && $current_url != end( $_SESSION['frm_http_pages'] ) ) {
+			$ext = substr( strrchr( substr( $request_uri, 0, strrpos( $request_uri, '?' ) ), '.' ), 1 );
 			if ( ! in_array( $ext, array( 'css', 'js' ) ) ) {
-				$_SESSION['frm_http_pages'][] = 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
+				$_SESSION['frm_http_pages'][] = $current_url;
 			}
 		}
 	}
@@ -119,7 +121,7 @@ class FrmUserTracking {
 			foreach ( $_SESSION['frm_http_referer'] as $referer ) {
 				self::$referrer_info .= str_pad( "Referer $i: ", 20 ) . $referer . "\r\n";
 				$keywords_used = self::get_referer_query( $referer );
-				if ( $keywords_used !== false ) {
+				if ( false !== $keywords_used ) {
 					self::$keywords[] = $keywords_used;
 				}
 
@@ -155,7 +157,6 @@ class FrmUserTracking {
 
 	private static function get_referer_query( $query ) {
 		if ( strpos( $query, 'google.' ) ) {
-			//$pattern = '/^.*\/search.*[\?&]q=(.*)$/';
 			$pattern = '/^.*[\?&]q=(.*)$/';
 		} else if ( strpos( $query, 'bing.com' ) ) {
 			$pattern = '/^.*q=(.*)$/';
