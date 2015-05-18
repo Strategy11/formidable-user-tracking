@@ -2,7 +2,7 @@
 /*
 Plugin Name: Formidable User Tracking
 Description: Track the steps a user takes before submitting a form
-Version: 1.0b
+Version: 1.0b2
 Plugin URI: http://formidablepro.com/
 Author URI: http://strategy11.com
 Author: Strategy11
@@ -72,18 +72,26 @@ class Frm_User_Tracking {
 	}
 
 	private static function add_current_page_to_session() {
-		$request_uri = FrmAppHelper::get_server_value( 'REQUEST_URI' );
-		$current_url = 'http://' . FrmAppHelper::get_server_value( 'SERVER_NAME' ) . $request_uri;
+		$current_url = FrmAppHelper::get_server_value( 'REQUEST_URI' );
+		if ( self::is_skippable_page( $current_url ) ) {
+			return;
+		}
+
 		if ( self::is_excluded_from_session( 'frm_http_pages' ) ) {
 			$_SESSION['frm_http_pages'] = array( $current_url );
 		}
 
 		if ( ! empty( $_SESSION['frm_http_pages'] ) && $current_url != end( $_SESSION['frm_http_pages'] ) ) {
-			$ext = substr( strrchr( substr( $request_uri, 0, strrpos( $request_uri, '?' ) ), '.' ), 1 );
+			$ext = substr( strrchr( substr( $current_url, 0, strrpos( $current_url, '?' ) ), '.' ), 1 );
 			if ( ! in_array( $ext, array( 'css', 'js' ) ) ) {
 				$_SESSION['frm_http_pages'][] = $current_url;
 			}
 		}
+	}
+
+	private static function is_skippable_page( $current_url ) {
+		$skip_url = '/wp-admin/admin-ajax.php';
+		return preg_match( "#$skip_url$#", $current_url );
 	}
 
 	private static function remove_visited_above_max() {
