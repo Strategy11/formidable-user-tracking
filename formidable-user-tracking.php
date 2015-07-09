@@ -29,7 +29,7 @@ class Frm_User_Tracking {
 			// Update the session data
 			add_action( 'init', 'Frm_User_Tracking::compile_referer_session', 1 );
 		}
-		add_action( 'frm_after_create_entry', 'Frm_User_Tracking::insert_tracking_into_entry' );
+		add_action( 'frm_after_create_entry', 'Frm_User_Tracking::insert_tracking_into_entry', 30 );
 		add_action( 'admin_init', 'Frm_User_Tracking::include_auto_updater', 1 );
 	}
 
@@ -95,7 +95,7 @@ class Frm_User_Tracking {
 	}
 
 	private static function remove_visited_above_max() {
-		$total_pages_visited = count( $_SESSION['frm_http_pages'] );
+		$total_pages_visited = isset( $_SESSION['frm_http_pages'] ) ? count( $_SESSION['frm_http_pages'] ) : 0;
 		if ( $total_pages_visited > self::$page_max ) {
 			$number_to_remove = $total_pages_visited - self::$page_max;
 			$_SESSION['frm_http_pages'] = array_slice( $_SESSION['frm_http_pages'], $number_to_remove );
