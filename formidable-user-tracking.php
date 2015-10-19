@@ -2,7 +2,7 @@
 /*
 Plugin Name: Formidable User Tracking
 Description: Track the steps a user takes before submitting a form
-Version: 1.0b2
+Version: 1.0b3
 Plugin URI: http://formidablepro.com/
 Author URI: http://strategy11.com
 Author: Strategy11
@@ -35,7 +35,9 @@ class Frm_User_Tracking {
 
 	public static function include_auto_updater() {
 		include_once( dirname( __FILE__ ) . '/frm-usrtrk-update.php' );
-		new Frm_Usrtrk_Update();
+		if ( class_exists( 'FrmAddon' ) ) {
+			Frm_Usrtrk_Update::load_hooks();
+		}
 	}
 
 	public static function compile_referer_session() {
