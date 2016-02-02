@@ -29,7 +29,7 @@ class Frm_User_Tracking {
 			// Update the session data
 			add_action( 'init', 'Frm_User_Tracking::compile_referer_session', 1 );
 		}
-		add_action( 'frm_after_create_entry', 'Frm_User_Tracking::insert_tracking_into_entry', 30 );
+		add_action( 'frm_after_create_entry', 'Frm_User_Tracking::insert_tracking_into_entry', 15 );
 		add_action( 'admin_init', 'Frm_User_Tracking::include_auto_updater', 1 );
 	}
 
