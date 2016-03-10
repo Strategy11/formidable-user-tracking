@@ -4,6 +4,7 @@ class Frm_Usrtrk_Update extends FrmAddon {
 
 	public $plugin_file;
 	public $plugin_name = 'User Tracking';
+	public $download_id = 170649;
 	public $version = '1.0b3';
 
 	public function __construct() {
