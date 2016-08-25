@@ -2,7 +2,7 @@
 /*
 Plugin Name: Formidable User Tracking
 Description: Track the steps a user takes before submitting a form
-Version: 1.0b3
+Version: 1.0
 Plugin URI: http://formidablepro.com/
 Author URI: http://strategy11.com
 Author: Strategy11
