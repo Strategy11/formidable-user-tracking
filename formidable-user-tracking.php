@@ -144,7 +144,7 @@ class Frm_User_Tracking {
 
 			self::$referrer_info .= "\r\n";
 		} else {
-			self::$referrer_info = FrmAppHelper::get_server_value( 'HTTP_REFERER' );
+			self::$referrer_info = FrmAppHelper::get_server_value( 'HTTP_REFERER' ) . "\r\n";
 		}
 	}
 
